@@ -36,7 +36,7 @@ body {
 }
 
 .widget:hover {
-    transform: scale(1.05);
+    transform: scale(1.015);
 }
 
 .today-label {
@@ -146,37 +146,102 @@ body {
     font-weight: 700;
 }
 
+.history-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 1rem;
+}
+
+.history-header p {
+    margin-top: 0.35rem;
+    color: rgba(255, 255, 255, 0.58);
+    font-size: 0.9rem;
+}
+
+.history-stats {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    gap: 0.45rem;
+}
+
+.history-stats span {
+    border: 1px solid rgba(34, 211, 238, 0.22);
+    border-radius: 999px;
+    padding: 0.35rem 0.65rem;
+    background: rgba(34, 211, 238, 0.08);
+    color: rgba(255, 255, 255, 0.8);
+    font-size: 0.78rem;
+    font-weight: 700;
+}
+
 .chart {
     width: 100%;
-    min-height: 220px;
-    border-radius: 0.9rem;
+    min-height: 300px;
+    border-radius: 1.1rem;
     background:
-        linear-gradient(to top, rgba(255, 255, 255, 0.06), rgba(255, 255, 255, 0.02)),
+        radial-gradient(circle at 22% 18%, rgba(34, 211, 238, 0.16), transparent 32%),
+        radial-gradient(circle at 78% 14%, rgba(59, 130, 246, 0.18), transparent 36%),
+        linear-gradient(to top, rgba(255, 255, 255, 0.075), rgba(255, 255, 255, 0.02)),
         linear-gradient(to right, rgba(34, 211, 238, 0.05), rgba(59, 130, 246, 0.12));
-    padding: 0.75rem;
+    padding: 0.85rem;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08);
 }
 
 .chart svg {
     width: 100%;
-    height: 220px;
+    height: 300px;
     overflow: visible;
 }
 
-.chart polyline {
+.chart-grid-line {
+    stroke: rgba(255, 255, 255, 0.1);
+    stroke-dasharray: 5 9;
+}
+
+.chart-area {
+    fill: url("#chartAreaGradient");
+    stroke: none;
+}
+
+.chart-line {
     fill: none;
-    stroke: #22d3ee;
-    stroke-width: 1.8;
+    stroke: url("#chartLineGradient");
+    stroke-width: 4;
+    stroke-linecap: round;
+    stroke-linejoin: round;
     vector-effect: non-scaling-stroke;
+    filter: drop-shadow(0 0 10px rgba(34, 211, 238, 0.45));
 }
 
 .chart circle {
-    fill: #3b82f6;
+    fill: #07111f;
+    stroke: #22d3ee;
+    stroke-width: 3;
+    filter: drop-shadow(0 0 8px rgba(34, 211, 238, 0.5));
 }
 
 .chart text {
     fill: rgba(255, 255, 255, 0.85);
-    font-size: 4px;
+    font-size: 13px;
+    font-weight: 700;
     text-anchor: middle;
+}
+
+.chart-axis-label {
+    fill: rgba(255, 255, 255, 0.42);
+    font-size: 12px;
+    text-anchor: end;
+}
+
+.chart-date-label {
+    fill: rgba(255, 255, 255, 0.55);
+    font-size: 12px;
+}
+
+.chart-point {
+    animation: point-pop 0.45s ease both;
 }
 
 .history-list {
@@ -218,10 +283,30 @@ body {
     }
 
     .chart {
-        min-height: 180px;
+        min-height: 220px;
     }
 
     .chart svg {
-        height: 180px;
+        height: 220px;
+    }
+
+    .history-header {
+        flex-direction: column;
+    }
+
+    .history-stats {
+        justify-content: flex-start;
+    }
+}
+
+@keyframes point-pop {
+    from {
+        opacity: 0;
+        transform: translateY(8px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
     }
 }

@@ -6,6 +6,7 @@ const saveButton = document.getElementById("saveButton");
 const statusMessageElement = document.getElementById("statusMessage");
 const chartElement = document.getElementById("chart");
 const historyListElement = document.getElementById("historyList");
+const historyStatsElement = document.getElementById("historyStats");
 
 const todayDate = new Date();
 const todayKey = formatDateKey(todayDate);
@@ -95,31 +96,89 @@ async function saveTodayCount() {
 function renderChart(entries) {
     if (!entries.length) {
         chartElement.innerHTML = '<div class="empty-state">Save a day to start the chart.</div>';
+        historyStatsElement.innerHTML = "";
         return;
     }
 
     const values = entries.map((entry) => Number(entry.counter_value) || 0);
     const maxValue = Math.max(...values, 1);
+    const minValue = 0;
+    const latestEntry = entries[entries.length - 1];
+    const firstEntry = entries[0];
+    const trend = Number(latestEntry.counter_value) - Number(firstEntry.counter_value);
+    const width = 640;
+    const height = 280;
+    const padding = {
+        top: 30,
+        right: 34,
+        bottom: 46,
+        left: 46
+    };
+    const plotWidth = width - padding.left - padding.right;
+    const plotHeight = height - padding.top - padding.bottom;
+    const valueRange = Math.max(maxValue - minValue, 1);
+
     const points = entries.map((entry, index) => {
-        const x = entries.length === 1 ? 50 : (index / (entries.length - 1)) * 100;
-        const y = 100 - ((Number(entry.counter_value) || 0) / maxValue) * 100;
-        return `${x},${y}`;
+        const x = entries.length === 1
+            ? padding.left + plotWidth / 2
+            : padding.left + (index / (entries.length - 1)) * plotWidth;
+        const y = padding.top + (1 - ((Number(entry.counter_value) - minValue) / valueRange)) * plotHeight;
+        return { x, y, value: Number(entry.counter_value), date: entry.day_date };
     });
 
-    const markers = entries.map((entry, index) => {
-        const x = entries.length === 1 ? 50 : (index / (entries.length - 1)) * 100;
-        const y = 100 - ((Number(entry.counter_value) || 0) / maxValue) * 100;
+    const linePoints = points.map((point) => `${point.x},${point.y}`).join(" ");
+    const areaPoints = [
+        `${points[0].x},${padding.top + plotHeight}`,
+        linePoints,
+        `${points[points.length - 1].x},${padding.top + plotHeight}`
+    ].join(" ");
+    const gridLines = [0, 0.25, 0.5, 0.75, 1].map((step) => {
+        const y = padding.top + step * plotHeight;
+        const labelValue = Math.round(maxValue - step * valueRange);
 
         return `
-            <circle cx="${x}" cy="${y}" r="2.5"></circle>
-            <text x="${x}" y="${Math.max(y - 6, 6)}">${entry.counter_value}</text>
+            <line class="chart-grid-line" x1="${padding.left}" x2="${padding.left + plotWidth}" y1="${y}" y2="${y}"></line>
+            <text class="chart-axis-label" x="${padding.left - 12}" y="${y + 4}">${labelValue}</text>
         `;
     }).join("");
+    const markers = points.map((point) => `
+        <g class="chart-point">
+            <circle cx="${point.x}" cy="${point.y}" r="6"></circle>
+            <text class="chart-value" x="${point.x}" y="${Math.max(point.y - 13, 18)}">${point.value}</text>
+        </g>
+    `).join("");
+    const dateLabels = points.map((point, index) => {
+        const shouldShow = index === 0 || index === points.length - 1 || entries.length <= 6;
 
+        if (!shouldShow) {
+            return "";
+        }
+
+        return `<text class="chart-date-label" x="${point.x}" y="${height - 16}">${formatShortDate(point.date)}</text>`;
+    }).join("");
+
+    historyStatsElement.innerHTML = `
+        <span>${entries.length} days</span>
+        <span>Latest ${latestEntry.counter_value}</span>
+        <span>${trend >= 0 ? "+" : ""}${trend} trend</span>
+    `;
     chartElement.innerHTML = `
-        <svg viewBox="0 0 100 100" preserveAspectRatio="none" role="img" aria-label="Saved daily counter history">
-            <polyline points="${points.join(" ")}"></polyline>
+        <svg viewBox="0 0 ${width} ${height}" role="img" aria-label="Saved daily counter history">
+            <defs>
+                <linearGradient id="chartLineGradient" x1="0" x2="1" y1="0" y2="0">
+                    <stop offset="0%" stop-color="#22d3ee"></stop>
+                    <stop offset="100%" stop-color="#3b82f6"></stop>
+                </linearGradient>
+                <linearGradient id="chartAreaGradient" x1="0" x2="0" y1="0" y2="1">
+                    <stop offset="0%" stop-color="#22d3ee" stop-opacity="0.32"></stop>
+                    <stop offset="100%" stop-color="#3b82f6" stop-opacity="0.02"></stop>
+                </linearGradient>
+            </defs>
+            ${gridLines}
+            <polygon class="chart-area" points="${areaPoints}"></polygon>
+            <polyline class="chart-line" points="${linePoints}"></polyline>
             ${markers}
+            ${dateLabels}
         </svg>
     `;
 }
@@ -143,7 +202,11 @@ function renderHistory(entries) {
 }
 
 function formatDateKey(date) {
-    return date.toISOString().slice(0, 10);
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, "0");
+    const day = String(date.getDate()).padStart(2, "0");
+
+    return `${year}-${month}-${day}`;
 }
 
 function formatPrettyDate(date) {
@@ -152,4 +215,11 @@ function formatPrettyDate(date) {
         month: "short",
         day: "numeric"
     }).format(date);
+}
+
+function formatShortDate(dateKey) {
+    return new Intl.DateTimeFormat(undefined, {
+        month: "short",
+        day: "numeric"
+    }).format(new Date(`${dateKey}T00:00:00`));
 }
