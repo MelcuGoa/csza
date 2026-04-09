@@ -11,10 +11,12 @@ body {
     align-items: center;
     justify-content: center;
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    color: white;
 }
 
 .container {
     padding: 20px;
+    width: min(100%, 760px);
 }
 
 .widget {
@@ -30,10 +32,18 @@ body {
     box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
     transform: scale(1);
     transition: transform 0.3s ease;
+    width: 100%;
 }
 
 .widget:hover {
     transform: scale(1.05);
+}
+
+.today-label {
+    font-size: 0.95rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.75);
 }
 
 .counter {
@@ -58,6 +68,39 @@ body {
     cursor: pointer;
     transition: all 0.3s ease;
     overflow: hidden;
+}
+
+.save-button {
+    width: 100%;
+    padding: 0.95rem 1.2rem;
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    border-radius: 1rem;
+    background: rgba(255, 255, 255, 0.08);
+    color: white;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s ease, border-color 0.2s ease, transform 0.2s ease;
+}
+
+.save-button:hover:not(:disabled) {
+    background: rgba(255, 255, 255, 0.14);
+    border-color: rgba(255, 255, 255, 0.3);
+}
+
+.save-button:disabled {
+    opacity: 0.7;
+    cursor: wait;
+}
+
+.status-message {
+    min-height: 1.25rem;
+    font-size: 0.95rem;
+    color: rgba(255, 255, 255, 0.78);
+}
+
+.status-message[data-state="error"] {
+    color: #fca5a5;
 }
 
 .increment-button:hover {
@@ -87,6 +130,80 @@ body {
     gap: 0.5rem;
 }
 
+.history-panel {
+    width: 100%;
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 1rem;
+    padding: 1.25rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.history-header h2 {
+    font-size: 1rem;
+    font-weight: 700;
+}
+
+.chart {
+    width: 100%;
+    min-height: 220px;
+    border-radius: 0.9rem;
+    background:
+        linear-gradient(to top, rgba(255, 255, 255, 0.06), rgba(255, 255, 255, 0.02)),
+        linear-gradient(to right, rgba(34, 211, 238, 0.05), rgba(59, 130, 246, 0.12));
+    padding: 0.75rem;
+}
+
+.chart svg {
+    width: 100%;
+    height: 220px;
+    overflow: visible;
+}
+
+.chart polyline {
+    fill: none;
+    stroke: #22d3ee;
+    stroke-width: 1.8;
+    vector-effect: non-scaling-stroke;
+}
+
+.chart circle {
+    fill: #3b82f6;
+}
+
+.chart text {
+    fill: rgba(255, 255, 255, 0.85);
+    font-size: 4px;
+    text-anchor: middle;
+}
+
+.history-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.65rem;
+}
+
+.history-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+    padding: 0.85rem 1rem;
+    border-radius: 0.85rem;
+    background: rgba(255, 255, 255, 0.06);
+}
+
+.empty-state {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 180px;
+    color: rgba(255, 255, 255, 0.6);
+    text-align: center;
+}
+
 @media (max-width: 480px) {
     .widget {
         padding: 2rem;
@@ -98,5 +215,13 @@ body {
     
     .increment-button {
         padding: 0.75rem 1.5rem;
+    }
+
+    .chart {
+        min-height: 180px;
+    }
+
+    .chart svg {
+        height: 180px;
     }
 }

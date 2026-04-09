@@ -1,0 +1,14 @@
+{
+  "$schema": "./node_modules/wrangler/config-schema.json",
+  "name": "csza",
+  "compatibility_date": "2026-04-09",
+  "pages_build_output_dir": ".",
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "asa_este",
+      "database_id": "4b976ebc-c1d5-48c8-ab9e-5354a5858b49",
+      "migrations_dir": "./migrations"
+    }
+  ]
+}

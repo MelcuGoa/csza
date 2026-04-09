@@ -9,6 +9,7 @@
 <body>
     <div class="container">
         <div class="widget">
+            <div class="today-label" id="todayLabel">Today</div>
             <div class="counter" id="counter">0</div>
             <button class="increment-button" onclick="increment()">
                 <div class="button-overlay"></div>
@@ -19,6 +20,15 @@
                     <span>Așa este?</span>
                 </div>
             </button>
+            <button class="save-button" id="saveButton" type="button">Save today's total</button>
+            <div class="status-message" id="statusMessage" aria-live="polite"></div>
+            <section class="history-panel">
+                <div class="history-header">
+                    <h2>Daily history</h2>
+                </div>
+                <div class="chart" id="chart" aria-label="Counter history chart"></div>
+                <div class="history-list" id="historyList"></div>
+            </section>
         </div>
     </div>
     <script src="script.js"></script>
