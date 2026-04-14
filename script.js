@@ -3,16 +3,19 @@ let count = 0;
 const counterElement = document.getElementById("counter");
 const todayLabelElement = document.getElementById("todayLabel");
 const saveButton = document.getElementById("saveButton");
+const keyButton = document.getElementById("keyButton");
 const statusMessageElement = document.getElementById("statusMessage");
 const chartElement = document.getElementById("chart");
 const historyListElement = document.getElementById("historyList");
 const historyStatsElement = document.getElementById("historyStats");
+const WRITE_KEY_STORAGE_KEY = "csza-write-key";
 
 const todayDate = new Date();
 const todayKey = formatDateKey(todayDate);
 
 todayLabelElement.textContent = formatPrettyDate(todayDate);
 saveButton.addEventListener("click", saveTodayCount);
+keyButton.addEventListener("click", manageWriteKey);
 
 void loadHistory();
 
@@ -62,6 +65,13 @@ async function loadHistory() {
 }
 
 async function saveTodayCount() {
+    const writeKey = getWriteKey() || promptForWriteKey();
+
+    if (!writeKey) {
+        setStatus("A write key is required to save data.", true);
+        return;
+    }
+
     saveButton.disabled = true;
     setStatus("Saving today's total...");
 
@@ -69,7 +79,8 @@ async function saveTodayCount() {
         const response = await fetch("/api/save", {
             method: "POST",
             headers: {
-                "Content-Type": "application/json"
+                "Content-Type": "application/json",
+                "X-Write-Key": writeKey
             },
             body: JSON.stringify({
                 date: todayKey,
@@ -183,6 +194,24 @@ function renderChart(entries) {
     `;
 }
 
+function manageWriteKey() {
+    const existingKey = getWriteKey();
+
+    if (existingKey) {
+        const shouldReplace = window.confirm("A write key is already stored on this device. Do you want to replace it?");
+
+        if (!shouldReplace) {
+            return;
+        }
+    }
+
+    const updatedKey = promptForWriteKey(existingKey);
+
+    if (updatedKey) {
+        setStatus("Write key saved on this device.");
+    }
+}
+
 function renderHistory(entries) {
     if (!entries.length) {
         historyListElement.innerHTML = '<div class="empty-state">No saved history yet.</div>';
@@ -207,6 +236,27 @@ function formatDateKey(date) {
     const day = String(date.getDate()).padStart(2, "0");
 
     return `${year}-${month}-${day}`;
+}
+
+function getWriteKey() {
+    return window.localStorage.getItem(WRITE_KEY_STORAGE_KEY) || "";
+}
+
+function promptForWriteKey(defaultValue = "") {
+    const enteredKey = window.prompt("Enter your write key for this device:", defaultValue);
+
+    if (!enteredKey) {
+        return "";
+    }
+
+    const trimmedKey = enteredKey.trim();
+
+    if (!trimmedKey) {
+        return "";
+    }
+
+    window.localStorage.setItem(WRITE_KEY_STORAGE_KEY, trimmedKey);
+    return trimmedKey;
 }
 
 function formatPrettyDate(date) {

@@ -1,11 +1,25 @@
 export async function onRequestPost(context) {
     const { DB } = context.env;
+    const expectedWriteKey = context.env.WRITE_API_KEY;
 
     if (!DB) {
         return json(
             { error: "D1 binding 'DB' is missing. Add it in Cloudflare Pages settings or wrangler.jsonc." },
             500
         );
+    }
+
+    if (!expectedWriteKey) {
+        return json(
+            { error: "WRITE_API_KEY secret is missing. Add it in Cloudflare Pages settings." },
+            500
+        );
+    }
+
+    const providedWriteKey = context.request.headers.get("X-Write-Key");
+
+    if (providedWriteKey !== expectedWriteKey) {
+        return json({ error: "Invalid write key." }, 401);
     }
 
     let payload;

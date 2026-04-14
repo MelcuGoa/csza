@@ -83,6 +83,22 @@ body {
     transition: background 0.2s ease, border-color 0.2s ease, transform 0.2s ease;
 }
 
+.key-button {
+    align-self: stretch;
+    border: none;
+    background: transparent;
+    color: rgba(255, 255, 255, 0.68);
+    font-size: 0.9rem;
+    text-decoration: underline;
+    text-decoration-color: rgba(255, 255, 255, 0.24);
+    cursor: pointer;
+    transition: color 0.2s ease;
+}
+
+.key-button:hover {
+    color: rgba(255, 255, 255, 0.92);
+}
+
 .save-button:hover:not(:disabled) {
     background: rgba(255, 255, 255, 0.14);
     border-color: rgba(255, 255, 255, 0.3);
