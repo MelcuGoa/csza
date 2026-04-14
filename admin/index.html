@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AÈ™a este? Admin</title>
+    <link rel="stylesheet" href="admin.css">
+</head>
+<body>
+    <main class="admin-shell">
+        <section class="admin-card">
+            <div class="admin-hero">
+                <div>
+                    <p class="eyebrow">Protected workspace</p>
+                    <h1>Counter admin</h1>
+                    <p class="hero-copy">Use a separate admin password to edit, add, and remove saved days.</p>
+                </div>
+                <div class="admin-hero-actions">
+                    <button class="primary-button" id="unlockButton" type="button">Unlock admin</button>
+                    <button class="ghost-button" id="clearAdminKeyButton" type="button">Forget this device</button>
+                </div>
+            </div>
+
+            <div class="status-bar" id="adminStatus" aria-live="polite"></div>
+
+            <section class="panel">
+                <div class="panel-header">
+                    <div>
+                        <h2>History</h2>
+                        <p>Live data pulled from the public history API</p>
+                    </div>
+                    <div class="history-stats" id="historyStats"></div>
+                </div>
+                <div class="chart" id="chart"></div>
+            </section>
+
+            <section class="panel">
+                <div class="panel-header">
+                    <div>
+                        <h2>Edit entries</h2>
+                        <p>Create new days, overwrite existing counts, or remove entries</p>
+                    </div>
+                </div>
+
+                <form class="admin-form" id="adminForm">
+                    <label class="field-group">
+                        <span>Date</span>
+                        <input type="date" id="adminDate" required>
+                    </label>
+                    <label class="field-group">
+                        <span>Count</span>
+                        <input type="number" id="adminCount" min="0" step="1" required>
+                    </label>
+                    <button class="primary-button" id="adminSubmitButton" type="submit">Save day</button>
+                </form>
+
+                <div class="toolbar">
+                    <span class="hint">Select a row below to load it into the editor.</span>
+                    <button class="ghost-button" id="clearFormButton" type="button">Clear form</button>
+                </div>
+
+                <div class="admin-table" id="adminTable"></div>
+            </section>
+        </section>
+    </main>
+    <script src="admin.js"></script>
+</body>
+</html>

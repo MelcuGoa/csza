@@ -9,6 +9,7 @@ export async function onRequestDelete(context) {
 async function handleDelete(context) {
     const { DB } = context.env;
     const expectedWriteKey = context.env.WRITE_API_KEY;
+    const expectedAdminKey = context.env.ADMIN_API_KEY;
 
     if (!DB) {
         return json(
@@ -17,16 +18,20 @@ async function handleDelete(context) {
         );
     }
 
-    if (!expectedWriteKey) {
+    if (!expectedWriteKey && !expectedAdminKey) {
         return json(
-            { error: "WRITE_API_KEY secret is missing. Add it in Cloudflare Pages settings." },
+            { error: "No write secret is configured. Add WRITE_API_KEY and/or ADMIN_API_KEY in Cloudflare Pages settings." },
             500
         );
     }
 
     const providedWriteKey = context.request.headers.get("X-Write-Key");
+    const providedAdminKey = context.request.headers.get("X-Admin-Key");
 
-    if (providedWriteKey !== expectedWriteKey) {
+    const isWriteAuthorized = expectedWriteKey && providedWriteKey === expectedWriteKey;
+    const isAdminAuthorized = expectedAdminKey && providedAdminKey === expectedAdminKey;
+
+    if (!isWriteAuthorized && !isAdminAuthorized) {
         return json({ error: "Invalid write key." }, 401);
     }
 
